@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import * as YUKA from 'yuka';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -21,6 +23,16 @@ const camera = new THREE.PerspectiveCamera(
 
 camera.position.set(0, 10, 15);
 camera.lookAt(scene.position);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.update()
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+labelRendererl.domElement.style.pointerEvents = 'none';
+document.appendChild(labelRenderer.domElement);
 
 const ambientLight = new THREE.AmbientLight(0x333333);
 scene.add(ambientLight);
@@ -96,6 +108,9 @@ const time = new YUKA.Time();
 function animate() {
     const delta = time.update().getDelta();
     entityManager.update(delta);
+
+    labelRenderer.render(scene, camera);
+
     renderer.render(scene, camera);
 }
 
@@ -105,4 +120,5 @@ window.addEventListener('resize', function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(this.window.innerWidth, this.window.innerHeight);
 });
